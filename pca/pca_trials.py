@@ -72,16 +72,72 @@ ax.legend(loc='upper left', bbox_to_anchor=(0.6, 1), shadow=True, ncol=1)
 #plt.show()
 plt.savefig('pca_trial.png')
 
-idx = x_wts[0, :].argsort()
+
+d4 = np.load("../../../DR/DR/ws/ratL/PutativeInterneuron.npy")[0]
+inx = np.zeros(neurons)
+
+for i in range(0,neurons):
+	if d4[i]:
+		inx[i] = -0.3
+
+idx = x_wts[1, :].argsort()
 fig = plt.figure(figsize=(8,8))
 ax = plt.subplot(111)
-ax.plot(x_wts[0, :][idx], '-', label="wts on CorrectTimes")
+inx = inx[idx]
+ax.plot(x_wts[1, :][idx], '-', label="wts on CorrectTimes")
 ax.plot(ix_wts[1, :][idx], '-', label="wts on InorrectTimes")
+ax.plot(np.nonzero(inx)[0], np.full(np.nonzero(inx)[0].shape, -0.3), 'o', label="PutativeInterneuron")
+for i in range(np.nonzero(inx)[0].size):
+	plt.axvline(x=np.nonzero(inx)[0][i], color='gray', linestyle='--')
 plt.title('PCA weights')
 plt.xlabel('neurons')
 plt.ylabel('weight')
 ax.yaxis.set_label_coords(-0.08,0.5)
-ax.legend(loc='upper left', bbox_to_anchor=(0.6, 1), shadow=True, ncol=1)
+ax.legend(loc='upper left', bbox_to_anchor=(0.1, 1), shadow=True, ncol=1)
 #plt.show()
 plt.savefig('pca_trial_wts.png')
 
+
+
+wts_in1 = []
+wts_in2 = []
+wts_rst1 = []
+wts_rst2 = []
+
+for i in range(0,neurons):
+	if d4[i]:
+		wts_in1.append(x_wts[0, :][i])
+		wts_in2.append(x_wts[1, :][i])
+	else:
+		wts_rst1.append(x_wts[0, :][i])
+		wts_rst2.append(x_wts[1, :][i])
+
+fig = plt.figure(figsize=(8,8))
+ax = plt.subplot(111)
+ax.plot(wts_in1, wts_in2, 'o', label="Interneuron")
+ax.plot(wts_rst1, wts_rst2, 'o', label="Excitatory")
+plt.title('Bi plot')
+plt.xlabel('dimension1')
+plt.ylabel('dimension2')
+ax.yaxis.set_label_coords(-0.08,0.5)
+ax.legend(loc='upper left', bbox_to_anchor=(0.1, 1), shadow=True, ncol=1)
+#plt.show()
+plt.savefig('pca_trial_biplot.png')
+
+# pca = PCA(n_components=2)
+# tx_new = pca.fit_transform(np.transpose(tx))
+# tx_wts = pca.components_
+
+
+# idx = x_wts[0, :].argsort()
+# fig = plt.figure(figsize=(8,8))
+# ax = plt.subplot(111)
+# ax.plot(x_wts[0, :][idx], '-', label="wts on CorrectTimes")
+# ax.plot(ix_wts[1, :][idx], '-', label="wts on InorrectTimes")
+# plt.title('PCA weights')
+# plt.xlabel('neurons')
+# plt.ylabel('weight')
+# ax.yaxis.set_label_coords(-0.08,0.5)
+# ax.legend(loc='upper left', bbox_to_anchor=(0.6, 1), shadow=True, ncol=1)
+# #plt.show()
+# plt.savefig('pca_trial_wts.png')
