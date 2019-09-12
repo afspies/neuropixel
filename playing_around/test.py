@@ -1,5 +1,6 @@
 import numpy as np
 
-a = [1,3,5,7,8, 5 ]
+a = [[-2, 5], [3, 4], [5,6]]
 a = np.array(a)
-print(a[[1,3,3,1,2]])
+b = np.array([1,3,5,6,7,4,3])
+print(b[2:5])
