@@ -42,7 +42,7 @@ def clean_data(x, y, unit_activity):
             continue
         
         ## Delete Nans / Teleports + interpolate linearly ##
-        i = max(2, i)
+        i = max(1, i)
         # print(positions[i-1:i+10]) 
         j = i 
         count = 1
