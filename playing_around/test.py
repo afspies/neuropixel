@@ -1,6 +1,10 @@
 import numpy as np
+import matplotlib.pyplot as plt
+a = np.array([[1,2], [1,2], [1,2], [1,2], [1,2], [1,2], [1,2]])
+b = np.transpose(np.array([1,3,5,6,7,4, 9]))
+print(a.shape)
+print(b.shape)
 
-a = [[-2, 5], [3, 4], [5,6]]
-a = np.array(a)
-b = np.array([1,3,5,6,7,4,3])
-print(b[2:5])
+
+plt.scatter()#, 5,7,"b")
+plt.show()
