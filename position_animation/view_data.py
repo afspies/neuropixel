@@ -14,40 +14,67 @@ def main():
     f = h5py.File(DATA_PATH + "RatL_241018.mat") # Load matlab data file
     
     # Plot data from one trial to test the "clean_data" function
-    x_raw = f['v']['pos']['Xpos'][0]
-    y_raw = f['v']['pos']['Ypos'][0]
+    x_raw = f['v']['pos']['Xpos']
+    y_raw = f['v']['pos']['Ypos']
     unit_activity_raw = f['v']['spikes']['spikeHist'][UNIT_CHOICE]
 
-    x, y, xy, vy, unit_activity = clean_data(x_raw, y_raw, unit_activity_raw)
-    plot_data(x, y, vy, vy, unit_activity)
+    positions, speed, unit_activity = clean_data(x_raw, y_raw, unit_activity_raw)
+    plot_data(positions, unit_activity)
 
+
+#------------------- Teleportation Removal Code ---------------##
 def clean_data(x, y, unit_activity): 
-    # Note - unique auto sorts
-    remove_nan = np.unique(np)
-    x = x[~np.isnan(x)]
-    y = y[~np.isnan(y)]
-    print(len(x))
+    positions = np.hstack((np.transpose(x), np.transpose(y)))
+    speed = []
+    # return positions, speed, unit_activity
+    vel = np.array([0, 0])
+    # Throw away first set of nans which 
+    i = 0
+    speed_max = 8
+    r = 50
+    while i < positions.shape[0]:
+        # Delete leading Nan values
+        if (i < 3) and (True in np.isnan(positions[i:i+3].flatten())):
+            # print("before",  i, positions[i])
+            positions = positions[1:, :]
+            unit_activity = unit_activity[1:]
+            # print("after", i, positions[i])
+            continue
+        
+        ## Delete Nans / Teleports + interpolate linearly ##
+        i = max(1, i)
+        # print(positions[i-1:i+10]) 
+        j = i 
+        count = 1
+        while ((True in np.isnan(positions[j]) or check_radius(positions[i - 1], positions[j], r))):
+            count += 1
+            j += 1
+            r = 2 * ((speed_max * count) ** 2)
+            # print(i,j, count, positions[j])
+        if count > 1: # Some number of invalid values were encountered
+            r = 50 # Reset valid point definition
 
-    # Calculate "velocity" (diff in subsequent positions)
-    vx = np.array([0] + [j - i for i, j in zip(x, x[1:])])
-    vy = np.array([0] + [j - i for i, j in zip(y, y[1:])])
+            # Interpolate between first new valid point and last valid point
+            vel_inbetween = (positions[j] - positions[i - 1]) / count 
+            for k in range(i, j):
+                positions[k] = positions[k - 1] + vel_inbetween
+        ## 
 
-    # Filter out positions corresponding to abnormal velocities 
-    difference_threshold = 8
-    good_points = np.unique(np.hstack((np.where(np.abs(vx) < difference_threshold), np.where(np.abs(vy) < difference_threshold))))
-    x = x[good_points][200:]
-    y = y[good_points][200:]
-    unit_activity = unit_activity[good_points][200:]
+        # Calculate speed
+        velocity = positions[i] - positions[i-1]
+        speed.append(np.inner(velocity, velocity))
 
-    # A better method with interpolation
-    # while x < len bla
+        i += 1
 
-    # plt.hist(vx, bins=np.arange(-10, 10, 0.1))
-    # plt.show()
-    return x, y, vx, vy, unit_activity
+    return positions, speed, unit_activity
+
+
+def check_radius(prev_pos, pos, r):
+    d = pos - prev_pos
+    return np.inner(d, d) > r
 
 ##------------------ Plotting Code -----------------------##
-def plot_data(x, y, vx, vy, unit_activity):
+def plot_data(positions, unit_activity):
     fig, ax = plt.subplots()
     history_length = 10
     cmap = cm.get_cmap('viridis', 8)
@@ -74,16 +101,17 @@ def plot_data(x, y, vx, vy, unit_activity):
 
     def update(frame):
         if frame < history_length:
-            ln.set_data(x[0:frame], y[0:frame])
+            ln.set_data(positions[0:frame, 0], positions[0:frame, 1])
         else:
-            ln.set_data(x[frame - history_length:frame], y[frame - history_length:frame])
+            ln.set_data(positions[frame - history_length:frame, 0], 
+                        positions[frame - history_length:frame, 1])
         ln.set_color(cmap(unit_activity[frame]))
 
         return ln,
 
     
-    ani = matplotlib.animation.FuncAnimation(fig, update, frames=(600 if EXPORT_MOVIE else len(x)),
-                init_func=init, blit=True, interval=50)
+    ani = matplotlib.animation.FuncAnimation(fig, update, 
+            frames=(600 if EXPORT_MOVIE else len(positions)), init_func=init, blit=True, interval=100)
     if EXPORT_MOVIE:
         ani.save("outputs/test.mp4", writer=writer)
         print("done")
