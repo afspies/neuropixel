@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import h5py
 from sklearn.decomposition import PCA
+import pandas as pd
 
 # Import data
 DATA_PATH = "../../../DR/DR/ws/ratL/"
@@ -47,10 +48,12 @@ print(ex.shape)
 
 pca = PCA(n_components=2)
 x_new = pca.fit_transform(np.transpose(cx))
+x_wts = pca.components_
 
 pca = PCA(n_components=2)
 ix_new = pca.fit_transform(np.transpose(ex))
-print(x_new.shape)
+ix_wts = pca.components_
+
 
 print(pca.explained_variance_ratio_)
 print(pca.singular_values_) 
@@ -67,4 +70,18 @@ plt.ylabel('dimensions')
 ax.yaxis.set_label_coords(-0.08,0.5)
 ax.legend(loc='upper left', bbox_to_anchor=(0.6, 1), shadow=True, ncol=1)
 #plt.show()
-plt.savefig('pca_trial1.png')
+plt.savefig('pca_trial.png')
+
+idx = x_wts[0, :].argsort()
+fig = plt.figure(figsize=(8,8))
+ax = plt.subplot(111)
+ax.plot(x_wts[0, :][idx], '-', label="wts on CorrectTimes")
+ax.plot(ix_wts[1, :][idx], '-', label="wts on InorrectTimes")
+plt.title('PCA weights')
+plt.xlabel('neurons')
+plt.ylabel('weight')
+ax.yaxis.set_label_coords(-0.08,0.5)
+ax.legend(loc='upper left', bbox_to_anchor=(0.6, 1), shadow=True, ncol=1)
+#plt.show()
+plt.savefig('pca_trial_wts.png')
+
