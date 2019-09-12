@@ -8,7 +8,7 @@ import matplotlib.animation
 
 DATA_PATH = "/home/alex/Desktop/NPix_dataset/ratL/"
 UNIT_CHOICE = 0
-EXPORT_MOVIE = False
+EXPORT_MOVIE = True
 
 def main():
     f = h5py.File(DATA_PATH + "RatL_241018.mat") # Load matlab data file
@@ -76,7 +76,7 @@ def check_radius(prev_pos, pos, r):
 ##------------------ Plotting Code -----------------------##
 def plot_data(positions, unit_activity):
     # history_length = 10
-    cmap = cm.get_cmap('YlGnBu', max(unit_activity) - 1)
+    cmap = cm.get_cmap('viridis', max(unit_activity) - 1)
     colors = cmap(unit_activity)#[matplotlib.colors.rgb2hex(x) for x in cmap(unit_activity)[:, :3]] # assign colors to every firing point
     colors[:, -1] = 0.15 # set alpha
 
@@ -113,7 +113,7 @@ def plot_data(positions, unit_activity):
     ani = matplotlib.animation.FuncAnimation(fig, update, 
             frames=(600 if EXPORT_MOVIE else len(positions)), init_func=init, blit=True, interval=10)
     if EXPORT_MOVIE:
-        ani.save("outputs/test.mp4", writer=writer)
+        ani.save("outputs/viridis.mp4", writer=writer)
         print("done")
     else: 
         plt.show()
