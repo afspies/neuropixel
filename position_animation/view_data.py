@@ -4,9 +4,12 @@ import matplotlib.pyplot as plt
 import scipy.io as sci
 import h5py
 from matplotlib import cm
-from matplotlib.animation import FuncAnimation
+import matplotlib.animation
+
 DATA_PATH = "/home/alex/Desktop/NPix_dataset/ratL/"
 UNIT_CHOICE = 0
+EXPORT_MOVIE = False
+
 def main():
     f = h5py.File(DATA_PATH + "RatL_241018.mat") # Load matlab data file
     
@@ -19,8 +22,11 @@ def main():
     plot_data(x, y, vy, vy, unit_activity)
 
 def clean_data(x, y, unit_activity): 
+    # Note - unique auto sorts
+    remove_nan = np.unique(np)
     x = x[~np.isnan(x)]
     y = y[~np.isnan(y)]
+    print(len(x))
 
     # Calculate "velocity" (diff in subsequent positions)
     vx = np.array([0] + [j - i for i, j in zip(x, x[1:])])
@@ -29,9 +35,9 @@ def clean_data(x, y, unit_activity):
     # Filter out positions corresponding to abnormal velocities 
     difference_threshold = 8
     good_points = np.unique(np.hstack((np.where(np.abs(vx) < difference_threshold), np.where(np.abs(vy) < difference_threshold))))
-    x = x[good_points]
-    y = y[good_points]
-    unit_activity = unit_activity[good_points]
+    x = x[good_points][200:]
+    y = y[good_points][200:]
+    unit_activity = unit_activity[good_points][200:]
 
     # A better method with interpolation
     # while x < len bla
@@ -54,6 +60,10 @@ def plot_data(x, y, vx, vy, unit_activity):
         labelbottom=False,
         labelleft=False) # labels along the bottom edge are off
 
+    # Set up formatting for the movie files
+    if EXPORT_MOVIE:
+        writer = matplotlib.animation.FFMpegWriter(fps=30, metadata=dict(artist='Me'), bitrate=6000)
+
     def init():
         ax.set_xlim(-30, 520)
         ax.set_ylim(65, 615)
@@ -68,12 +78,17 @@ def plot_data(x, y, vx, vy, unit_activity):
         else:
             ln.set_data(x[frame - history_length:frame], y[frame - history_length:frame])
         ln.set_color(cmap(unit_activity[frame]))
-        return ln,
-        
-    ani = FuncAnimation(fig, update, frames=range(len(x)),
-                    init_func=init, blit=True, interval=50)
 
-    plt.show()
+        return ln,
+
+    
+    ani = matplotlib.animation.FuncAnimation(fig, update, frames=(600 if EXPORT_MOVIE else len(x)),
+                init_func=init, blit=True, interval=50)
+    if EXPORT_MOVIE:
+        ani.save("outputs/test.mp4", writer=writer)
+        print("done")
+    else: 
+        plt.show()
 
 def draw_maze():
     import scipy.io as sci

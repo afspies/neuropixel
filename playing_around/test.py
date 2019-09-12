@@ -1,4 +1,5 @@
-a = [1,3,5,7,8, 5 ]
+import numpy as np
 
-diff = [j - i for i, j in zip(a, a[1:])]
-print(diff)
+a = [1,3,5,7,8, 5 ]
+a = np.array(a)
+print(a[[1,3,3,1,2]])
