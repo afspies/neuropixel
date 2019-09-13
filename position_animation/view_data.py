@@ -8,7 +8,7 @@ import matplotlib.animation
 
 DATA_PATH = "../../../DR/DR/ws/ratM/"
 UNIT_CHOICE = 0
-EXPORT_MOVIE = False
+EXPORT_MOVIE = True
 
 def main():
     f = h5py.File(DATA_PATH + "RatM_271118.mat") # Load matlab data file
@@ -26,7 +26,7 @@ def main():
 
 #------------------- Teleportation Removal Code ---------------##
 def clean_data(x, y, unit_activity): 
-    positions = np.hstack((np.transpose(x), np.transpose(y)))
+    positions = np.hstack((np.transpose(x).astype(np.single), np.transpose(y).astype(np.single)))
     speed = []
     # return positions, speed, unit_activity
     vel = np.array([0, 0])
@@ -68,7 +68,7 @@ def clean_data(x, y, unit_activity):
 
         i += 1
 
-    return positions, speed, unit_activity
+    return positions, speed, unit_activity.astype(np.int8)
 
 
 def check_radius(prev_pos, pos, r):
@@ -77,10 +77,14 @@ def check_radius(prev_pos, pos, r):
 
 ##------------------ Plotting Code -----------------------##
 def plot_data(positions, unit_activity):
+    # history_length = 10
+    cmap = cm.get_cmap('viridis', max(unit_activity) - 1)
+    colors = cmap(unit_activity)#[matplotlib.colors.rgb2hex(x) for x in cmap(unit_activity)[:, :3]] # assign colors to every firing point
+    colors[:, -1] = 0.15 # set alpha
+
     fig, ax = plt.subplots()
-    history_length = 10
-    cmap = cm.get_cmap('viridis', 8)
-    ln, = plt.plot([0]*10, [0]*10, 'o')#, c=cmap(range(10)))
+    ln = ax.scatter([0], [0], marker='o', linewidth=0, s=60)#, c=cmap(range(10)))
+
     plt.tick_params(
         axis='both',          # changes apply to both
         which='both',      # both major and minor ticks are affected
@@ -102,20 +106,16 @@ def plot_data(positions, unit_activity):
         return ln,
 
     def update(frame):
-        if frame < history_length:
-            ln.set_data(positions[0:frame, 0], positions[0:frame, 1])
-        else:
-            ln.set_data(positions[frame - history_length:frame, 0], 
-                        positions[frame - history_length:frame, 1])
-        ln.set_color(cmap(unit_activity[frame]))
-
+        #Make a tuple or list of (x0,y0,c0,x1,y1,c1,x2....)
+        ln.set_color(colors[:frame])
+        # ln.set_sizes(np.transpose(unit_activity[:frame]))
+        ln.set_offsets(positions[:frame])
         return ln,
-
-    
+      
     ani = matplotlib.animation.FuncAnimation(fig, update, 
-            frames=(600 if EXPORT_MOVIE else len(positions)), init_func=init, blit=True, interval=100)
+            frames=(600 if EXPORT_MOVIE else len(positions)), init_func=init, blit=True, interval=10)
     if EXPORT_MOVIE:
-        ani.save("outputs/test.mp4", writer=writer)
+        ani.save("outputs/viridis.mp4", writer=writer)
         print("done")
     else: 
         plt.show()

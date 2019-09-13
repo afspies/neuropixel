@@ -1,7 +1,8 @@
-import scipy.io as sci
-boundary_def = sci.loadmat("/home/alex/Desktop/ndc/neuropixel/position_animation/coordinatesData.mat")
-# print(boundary_def['coordinatesData'])
-print(boundary_def['coordinatesData'][0])
-# for box in enumerate([0]):
-#     print(box)
-#     print(boundary_def.dtype[1][i])
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.realpath(__file__))[:-18])
+from classes.DataGetter import DataGetter
+
+path = "/home/alex/Desktop/NPix_dataset/ratL/RatL_241018.mat"
+x, y, fire = DataGetter(path).get_data("clean")
