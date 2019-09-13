@@ -4,14 +4,22 @@ import h5py
 from sklearn.decomposition import PCA
 
 # Import data
-DATA_PATH = "../../../DR/DR/ws/ratL/"
-f = h5py.File(DATA_PATH + "RatL_241018.mat")
+# DATA_PATH = "../../../DR/DR/ws/ratL/"
+# f = h5py.File(DATA_PATH + "RatL_241018.mat")
+DATA_PATH = "../../../DR/DR/ws/ratM/"
+f = h5py.File(DATA_PATH + "RatM_271118.mat")
 
-time_stamps12 = np.loadtxt("./space/12.dat")[:,1]
-time_stamps21 = np.loadtxt("./space/21.dat")[:,1]
-time_stamps22 = np.loadtxt("./space/22.dat")[:,1]
-time_stamps23 = np.loadtxt("./space/23.dat")[:,1]
-time_stamps32 = np.loadtxt("./space/32.dat")[:,1]
+# time_stamps12 = np.loadtxt("./space/12.dat")[:,1]
+# time_stamps21 = np.loadtxt("./space/21.dat")[:,1]
+# time_stamps22 = np.loadtxt("./space/22.dat")[:,1]
+# time_stamps23 = np.loadtxt("./space/23.dat")[:,1]
+# time_stamps32 = np.loadtxt("./space/32.dat")[:,1]
+
+time_stamps12 = np.loadtxt("./space/M/12.dat")[:,1]
+time_stamps21 = np.loadtxt("./space/M/21.dat")[:,1]
+time_stamps22 = np.loadtxt("./space/M/22.dat")[:,1]
+time_stamps23 = np.loadtxt("./space/M/23.dat")[:,1]
+time_stamps32 = np.loadtxt("./space/M/32.dat")[:,1]
 
 time_axis = f['v']['spikes']['tb']
 
@@ -108,7 +116,7 @@ ax.plot(range(-250,250), x_new21[:, 0], '-', label="dim1 on 21")
 ax.plot(range(-250,250), x_new22[:, 0], '-', label="dim1 on 22")
 ax.plot(range(-250,250), x_new23[:, 0], '-', label="dim1 on 23")
 ax.plot(range(-250,250), x_new32[:, 0], '-', label="dim1 on 32")
-plt.title('PCA ratL trials')
+plt.title('PCA ratM trials')
 plt.xlabel('time')
 plt.ylabel('dimensions')
 ax.yaxis.set_label_coords(-0.08,0.5)
@@ -124,7 +132,7 @@ ax.plot(range(-250,250), x_new21[:, 1], '-', label="dim1 on 21")
 ax.plot(range(-250,250), x_new22[:, 1], '-', label="dim1 on 22")
 ax.plot(range(-250,250), x_new23[:, 1], '-', label="dim1 on 23")
 ax.plot(range(-250,250), x_new32[:, 1], '-', label="dim1 on 32")
-plt.title('PCA ratL trials')
+plt.title('PCA ratM trials')
 plt.xlabel('time')
 plt.ylabel('dimensions')
 ax.yaxis.set_label_coords(-0.08,0.5)
@@ -139,7 +147,7 @@ ax.plot(x_new21[:, 0], x_new21[:, 1], '-', label="dim1 on 21")
 ax.plot(x_new22[:, 0], x_new22[:, 1], '-', label="dim1 on 22")
 ax.plot(x_new23[:, 0], x_new23[:, 1], '-', label="dim1 on 23")
 ax.plot(x_new32[:, 0], x_new32[:, 1], '-', label="dim1 on 32")
-plt.title('PCA ratL trials')
+plt.title('PCA ratM trials')
 plt.xlabel('time')
 plt.ylabel('dimensions')
 ax.yaxis.set_label_coords(-0.08,0.5)

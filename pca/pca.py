@@ -5,16 +5,16 @@ from sklearn.decomposition import PCA
 
 
 # Import data
-# DATA_PATH = "../../../DR/DR/ws/ratL/"
-# f = h5py.File(DATA_PATH + "RatL_241018.mat")
-# speed = np.load("../pca/L/speed.npy")
-# d4 = np.load("../../../DR/DR/ws/ratL/PutativeInterneuron.npy")[0]
+DATA_PATH = "../../../DR/DR/ws/ratL/"
+f = h5py.File(DATA_PATH + "RatL_241018.mat")
+speed = np.load("../pca/L/speed.npy")
+d4 = np.load("../../../DR/DR/ws/ratL/PutativeInterneuron.npy")[0]
 
-DATA_PATH = "../../../DR/DR/ws/ratM/"
-f = h5py.File(DATA_PATH + "RatM_271118.mat")
-speed = np.load("../pca/M/speed.npy")
-d4 = np.load("../../../DR/DR/ws/ratM/PutativeInterneuron.npy")
-print(d4.shape)
+# DATA_PATH = "../../../DR/DR/ws/ratM/"
+# f = h5py.File(DATA_PATH + "RatM_271118.mat")
+# speed = np.load("../pca/M/speed.npy")
+# d4 = np.load("../../../DR/DR/ws/ratM/PutativeInterneuron.npy")
+# print(d4.shape)
 
 time_axis = f['v']['spikes']['tb']
 hist = f['v']['spikes']['spikeHist']
@@ -47,6 +47,10 @@ speed_s = [sum(speed[i:i+25]) for i in range(0, len(speed), 25)]
 speed_s = np.asarray(speed_s)/25
 dim1 = x_new[:, 0]
 
+
+histZ_s = [np.sum(histZ[:,i:i+25], axis=1) for i in range(0, histZ.shape[1], 25)]
+histZ_s = np.asarray(histZ_s)
+
 #speed_s = (speed_s-np.mean(speed_s))/np.std(speed_s)
 #dim1 = (dim1-np.mean(dim1))/np.std(dim1)
 
@@ -78,6 +82,41 @@ plt.ylabel('speed')
 ax.legend(loc='upper left', bbox_to_anchor=(0.75, 1.075), shadow=True, ncol=1)
 ax.yaxis.set_label_coords(-0.08,0.5)
 plt.savefig('speed.png')
+
+fig = plt.figure(figsize=(9,4))
+ax = plt.subplot(111)
+ax.plot(np.mean(histZ_s, axis=1), '-', label="firing rate")#, markersize=0.4)
+plt.title('PCA ratL')
+plt.xlabel('time')
+plt.ylabel('firing rate')
+ax.legend(loc='upper left', bbox_to_anchor=(0.75, 1.075), shadow=True, ncol=1)
+ax.yaxis.set_label_coords(-0.08,0.5)
+plt.savefig('fr.png')
+
+
+x1 = np.mean(histZ_s, axis=1)[1000:1100]
+x2 = speed_s[1000:1100]
+x3 = x_new[:, 0][1000:1100]
+x4 = x_new[:, 1][1000:1100]
+
+# x1 = (x1-np.mean(x1))/np.std(x1)
+# x2 = (x2-np.mean(x2))/np.std(x2)
+# x3 = (x3-np.mean(x3))/np.std(x3)
+# x4 = (x4-np.mean(x4))/np.std(x4)
+
+
+fig = plt.figure(figsize=(9,4))
+ax = plt.subplot(111)
+#ax.plot(x1*20, '-', label="firing rate")#, markersize=0.4)
+ax.plot(x2, '-', label="speed")#, markersize=0.4)
+ax.plot(x3, '-', label="dimension1")
+ax.plot(x4, '-', label="dimension2")
+plt.title('PCA ratL')
+plt.xlabel('time')
+plt.ylabel('magnitude')
+ax.legend(loc='upper left', bbox_to_anchor=(0.75, 1.075), shadow=True, ncol=1)
+ax.yaxis.set_label_coords(-0.08,0.5)
+plt.savefig('combined.png')
 
 
 
