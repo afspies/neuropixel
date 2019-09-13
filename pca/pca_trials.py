@@ -7,8 +7,8 @@ import pandas as pd
 # Import data
 DATA_PATH = "../../../DR/DR/ws/ratL/"
 f = h5py.File(DATA_PATH + "RatL_241018.mat")
-# DATA_PATH = "./ratL/"
-# f = h5py.File(DATA_PATH + "RatL_241018.mat")
+# DATA_PATH = "../../../DR/DR/ws/ratM/"
+# f = h5py.File(DATA_PATH + "RatM_271118.mat")
 
 time_axis = f['v']['spikes']['tb']
 hist = f['v']['spikes']['spikeHist']
@@ -60,10 +60,10 @@ print(pca.singular_values_)
 
 fig = plt.figure(figsize=(8,8))
 ax = plt.subplot(111)
-ax.plot(x_new[:, 0], '-', label="dim1 on CorrectTimes")
-ax.plot(x_new[:, 1], '-', label="dim2 on CorrectTimes")
-ax.plot(ix_new[:, 0], '-', label="dim1 on IncorrectTimes")
-ax.plot(ix_new[:, 1], '-', label="dim2 on IncorrectTimes")
+ax.plot(range(-250, 250), x_new[:, 0], '-', label="dim1 on CorrectTimes")
+ax.plot(range(-250, 250), x_new[:, 1], '-', label="dim2 on CorrectTimes")
+ax.plot(range(-250, 250), ix_new[:, 0], '-', label="dim1 on IncorrectTimes")
+ax.plot(range(-250, 250), ix_new[:, 1], '-', label="dim2 on IncorrectTimes")
 plt.title('PCA ratL')
 plt.xlabel('time')
 plt.ylabel('dimensions')
@@ -73,6 +73,7 @@ ax.legend(loc='upper left', bbox_to_anchor=(0.6, 1), shadow=True, ncol=1)
 plt.savefig('pca_trial.png')
 
 
+#d4 = np.load("../../../DR/DR/ws/ratM/PutativeInterneuron.npy")
 d4 = np.load("../../../DR/DR/ws/ratL/PutativeInterneuron.npy")[0]
 inx = np.zeros(neurons)
 
