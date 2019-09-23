@@ -6,12 +6,12 @@ import h5py
 from matplotlib import cm
 import matplotlib.animation
 
-DATA_PATH = "/home/alex/Desktop/NPix_dataset/ratL/"
+DATA_PATH = "../../../DR/DR/ws/ratM/"
 UNIT_CHOICE = 0
 EXPORT_MOVIE = True
 
 def main():
-    f = h5py.File(DATA_PATH + "RatL_241018.mat") # Load matlab data file
+    f = h5py.File(DATA_PATH + "RatM_271118.mat") # Load matlab data file
     
     # Plot data from one trial to test the "clean_data" function
     x_raw = f['v']['pos']['Xpos']
@@ -19,7 +19,9 @@ def main():
     unit_activity_raw = f['v']['spikes']['spikeHist'][UNIT_CHOICE]
 
     positions, speed, unit_activity = clean_data(x_raw, y_raw, unit_activity_raw)
-    plot_data(positions, unit_activity)
+    print(len(speed))
+    np.save("../pca/M/speed.npy", np.asarray(speed))
+    #plot_data(positions, unit_activity)
 
 
 #------------------- Teleportation Removal Code ---------------##
