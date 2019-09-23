@@ -6,21 +6,21 @@ import matplotlib.pyplot as plt
 import h5py
 
 class DataGetter:
-    def __init__(self, path, unit_choice=-1):
+    def __init__(self, path):
         self.f = h5py.File(path) # Load matlab data file
 
-    def get_data(self, clean=True, unit_choice=0):
+    def get_data(self, clean=True):
         if not clean:
             return self.f['v']
         else:
             # TODO Unit choice -1 ==> All units
             x_raw = self.f['v']['pos']['Xpos']
             y_raw = self.f['v']['pos']['Ypos']
-            unit_activity_raw = self.f['v']['spikes']['spikeHist'][unit_choice] 
+            unit_activity_raw = self.f['v']['spikes']['spikeHist']
             return self.clean_data(x_raw, y_raw, unit_activity_raw)
         
 
-    def clean_data(self, x, y, unit_activity): 
+    def clean_data(self, x, y, unit_activity):
         def check_radius(prev_pos, pos, r):
             d = pos - prev_pos
             return np.inner(d, d) > r
@@ -33,14 +33,13 @@ class DataGetter:
         speed_max = 8
         r = 50
         while i < positions.shape[0]:
+           
             # Delete leading Nan values
             if (i < 3) and (True in np.isnan(positions[i:i+3].flatten())):
                 # print("before",  i, positions[i])
                 positions = positions[1:, :]
-                unit_activity = unit_activity[1:]
-                # print("after", i, positions[i])
+                unit_activity = unit_activity[:, 1:]
                 continue
-            
             ## Delete Nans / Teleports + interpolate linearly ##
             i = max(1, i)
             # print(positions[i-1:i+10]) 

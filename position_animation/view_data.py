@@ -93,7 +93,7 @@ def plot_data(positions, unit_activity):
 
     # Set up formatting for the movie files
     if EXPORT_MOVIE:
-        writer = matplotlib.animation.FFMpegWriter(fps=30, metadata=dict(artist='Me'), bitrate=6000)
+        writer = matplotlib.animation.FFMpegWriter(fps=30, metadata=dict(artist='Me'), bitrate=12000)
 
     def init():
         ax.set_xlim(-30, 520)
@@ -105,15 +105,20 @@ def plot_data(positions, unit_activity):
 
     def update(frame):
         #Make a tuple or list of (x0,y0,c0,x1,y1,c1,x2....)
-        ln.set_color(colors[:frame])
+        temp = np.copy(colors[:frame])
+        try:
+            temp[frame - 1] = np.array([0,1,0, 1])
+        except IndexError:
+            pass
+        ln.set_color(temp)
         # ln.set_sizes(np.transpose(unit_activity[:frame]))
         ln.set_offsets(positions[:frame])
         return ln,
       
     ani = matplotlib.animation.FuncAnimation(fig, update, 
-            frames=(600 if EXPORT_MOVIE else len(positions)), init_func=init, blit=True, interval=10)
+            frames=(1200 if EXPORT_MOVIE else len(positions)), init_func=init, blit=True, interval=10)
     if EXPORT_MOVIE:
-        ani.save("outputs/viridis.mp4", writer=writer)
+        ani.save("outputs/viridis.mp4", writer=writer, dpi=180)
         print("done")
     else: 
         plt.show()
